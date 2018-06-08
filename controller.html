@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+	<head></head>
+	<body onload="init()">
+		<button onclick="sendData()">Send</button>
+		<div id="received"></div>
+	</body>
+	<script>
+		function init() {
+			window.addEventListener("message", messageReceived, false);
+		}
+
+		function messageReceived(event) {
+			document.querySelector("#received").innerHTML = event.data.first;
+		}
+
+		function sendData() {
+			window.opener.postMessage(Math.random().toString(), "*");
+		}
+	</script>
+</html>
