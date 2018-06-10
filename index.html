@@ -1,31 +1,78 @@
 <!DOCTYPE html>
 <html>
-	<head></head>
-	<body onload="init()">
-		<button onclick="openWindow()">Open</button>
-		<button onclick="sendData()">Send</button>
-		<div id="received"></div>
+	<head>
+		<link rel="stylesheet" type="text/css" href="index.css" />
+		<title>Jeopardy!</title>
+	</head>
+	<body onload="init()" onresize="resizeBoard()">
+		<!-- Game Intro -->
+		<div id="game-intro">
+			<img id="logo" src="https://i.imgur.com/zaFyIhR.jpg" />
+		</div>
+
+		<div id="scoreboard">
+
+		</div>
+
+		<div id="board">
+			<div class="category-column" id="category-1">
+				<div class="category-header" id="header-1"><div class="box-text">JEOPARDY!</div></div>
+				<div class="question" id="question-1-1"><div class="box-text">$200</div></div>
+				<div class="question" id="question-1-2"><div class="box-text">$400</div></div>
+				<div class="question" id="question-1-3"><div class="box-text">$600</div></div>
+				<div class="question" id="question-1-4"><div class="box-text">$800</div></div>
+				<div class="question" id="question-1-5"><div class="box-text">$1000</div></div>
+			</div>
+			<div class="category-column" id="category-2">
+				<div class="category-header" id="header-2"><div class="box-text">JEOPARDY!</div></div>
+				<div class="question" id="question-2-1"><div class="box-text">$200</div></div>
+				<div class="question" id="question-2-2"><div class="box-text">$400</div></div>
+				<div class="question" id="question-2-3"><div class="box-text">$600</div></div>
+				<div class="question" id="question-2-4"><div class="box-text">$800</div></div>
+				<div class="question" id="question-2-5"><div class="box-text">$1000</div></div>
+			</div>
+			<div class="category-column" id="category-3">
+					<div class="category-header" id="header-3"><div class="box-text">JEOPARDY!</div></div>
+					<div class="question" id="question-3-1"><div class="box-text">$200</div></div>
+					<div class="question" id="question-3-2"><div class="box-text">$400</div></div>
+					<div class="question" id="question-3-3"><div class="box-text">$600</div></div>
+					<div class="question" id="question-3-4"><div class="box-text">$800</div></div>
+					<div class="question" id="question-3-5"><div class="box-text">$1000</div></div>
+			</div>
+			<div class="category-column" id="category-4">
+				<div class="category-header" id="header-4"><div class="box-text">JEOPARDY!</div></div>
+				<div class="question" id="question-4-1"><div class="box-text">$200</div></div>
+				<div class="question" id="question-4-2"><div class="box-text">$400</div></div>
+				<div class="question" id="question-4-3"><div class="box-text">$600</div></div>
+				<div class="question" id="question-4-4"><div class="box-text">$800</div></div>
+				<div class="question" id="question-4-5"><div class="box-text">$1000</div></div>
+			</div>
+			<div class="category-column" id="category-5">
+					<div class="category-header" id="header-5"><div class="box-text">JEOPARDY!</div></div>
+					<div class="question" id="question-5-1"><div class="box-text">$200</div></div>
+					<div class="question" id="question-5-2"><div class="box-text">$400</div></div>
+					<div class="question" id="question-5-3"><div class="box-text">$600</div></div>
+					<div class="question" id="question-5-4"><div class="box-text">$800</div></div>
+					<div class="question" id="question-5-5"><div class="box-text">$1000</div></div>
+			</div>
+			<div class="category-column" id="category-6">
+					<div class="category-header" id="header-6"><div class="box-text">JEOPARDY!</div></div>
+					<div class="question" id="question-6-1"><div class="box-text">$200</div></div>
+					<div class="question" id="question-6-2"><div class="box-text">$400</div></div>
+					<div class="question" id="question-6-3"><div class="box-text">$600</div></div>
+					<div class="question" id="question-6-4"><div class="box-text">$800</div></div>
+					<div class="question" id="question-6-5"><div class="box-text">$1000</div></div>
+			</div>
+		</div>
+
+		<div id="clue">
+			"The Reptile Room" & "The Austere Academy", both from "A Series of Unfortunate Events"
+		</div>
+
+		<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+		<script src="index.js"></script>
 	</body>
-	<script>
-		var controller;
-
-		function init() {
-			window.addEventListener("message", messageReceived, false);
-		}
-
-		function openWindow() {
-			controller = window.open("controller.html", "", "width=640, height=480");
-		}
-
-		function sendData() {
-			var obj = {};
-			obj.first = 1;
-			obj.second = Math.random().toString();
-			controller.postMessage(obj, "*");
-		}
-
-		function messageReceived(event) {
-			document.querySelector("#received").innerHTML = event.data;
-		}
-	</script>
 </html>

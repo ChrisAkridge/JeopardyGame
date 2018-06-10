@@ -1,0 +1,104 @@
+html,
+body {
+    height: 100%;
+}
+
+body {
+	background: #060ce9; /* Jeopardy! blue */
+	display: flex;
+	flex-direction: column;
+	color: white;
+	margin: 0;
+}
+
+div {
+	box-sizing: border-box;
+}
+
+/* Game Intro */
+
+#game-intro {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#logo {
+	display: block;
+}
+
+/* Scoreboard */
+#scoreboard {
+	width: 100%;
+	display: none;
+}
+
+.player-score-container {
+	flex: 1 1 0;
+	text-align: center;
+	border: 1px solid white;
+}
+
+.player-name {
+	font-size: 20px;
+}
+
+.player-score {
+	font-size: 28px;
+}
+
+.score-negative {
+	background: red;
+}
+
+/* Game Board */
+#board {
+	flex-grow: 1;
+	display: none;
+	flex-direction: row;
+}
+
+.category-column {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+}
+
+.category-header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: 'PT Sans', sans-serif;
+	font-size: 32px;
+	text-transform: uppercase;
+	text-shadow: -2px 2px 3px #000000;
+	text-align: center;
+	border: 2px solid black;
+}
+
+.question {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: yellow;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 56px;
+	text-shadow: -2px 2px 3px #000000;
+	border: 2px solid black;
+	text-align: center;
+}
+
+/* Clue */
+#clue {
+	display: none;
+	font-family: 'Sunflower', sans-serif;
+	font-size: 64px;
+	text-shadow: -2px 2px 3px #000000;
+	text-align: center;
+	text-transform: uppercase;
+	margin-top: auto;
+	margin-bottom: auto;
+}

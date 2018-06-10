@@ -2,20 +2,102 @@
 <html>
 	<head></head>
 	<body onload="init()">
-		<button onclick="sendData()">Send</button>
-		<div id="received"></div>
+		<!-- Set Player Name and Counts -->
+		<div id="set-player-info">
+			<p>How many players are there?</p>
+			<input type="number" id="player-count" value="2" min="1" max="10" />
+			<input type="button" id="player-count-submit" onclick="setPlayerCount()" value="Set" />
+
+			<div id="player-inputs">
+
+			</div>
+
+			<input type="button" id="player-info-submit" onclick="setPlayerInfo()" value="Set Players" style="display: none" />
+		</div>
+
+		<div id="choose-game-source" style="display: none">
+			<p>Where do you want the questions to come from?</p>
+			<input type="radio" id="source-jservice" name="source" value="jservice">
+			<label for="source-jservice">JService.io (real Jeopardy questions)</label>
+			<input type="radio" id="source-local" name="source" value="local">
+			<label for="source-local">Local (JSON file with questions)</label>
+
+			<input type="file" id="local-file-upload" accept=".json">
+			<input type="button" id="game-source-submit" onclick="setGameSource()" value="Choose Source">
+		</div>
+
+		<div id="category-reveal" style="display: none">
+			<div id="reveal-category" style="border: 1px solid black; width: 400px; text-align: center" onclick="revealCategory()">Reveal Category</div>
+		</div>
+
+		<div id="board" style="display: none">
+			<table border="1" bordercolor="#000000" align="center" width="80%" height="80%">
+				<tr>
+					<th id="board-c1h">JEOPARDY!</th>
+					<th id="board-c2h">JEOPARDY!</th>
+					<th id="board-c3h">JEOPARDY!</th>
+					<th id="board-c4h">JEOPARDY!</th>
+					<th id="board-c5h">JEOPARDY!</th>
+					<th id="board-c6h">JEOPARDY!</th>
+				</tr>
+				<tr>
+					<td id="board-c1q1" onclick="playQuestion(1, 1)">$200</td>
+					<td id="board-c2q1" onclick="playQuestion(2, 1)">$200</td>
+					<td id="board-c3q1" onclick="playQuestion(3, 1)">$200</td>
+					<td id="board-c4q1" onclick="playQuestion(4, 1)">$200</td>
+					<td id="board-c5q1" onclick="playQuestion(5, 1)">$200</td>
+					<td id="board-c6q1" onclick="playQuestion(6, 1)">$200</td>
+				</tr>
+				<tr>
+					<td id="board-c1q2" onclick="playQuestion(1, 2)">$400</td>
+					<td id="board-c2q2" onclick="playQuestion(2, 2)">$400</td>
+					<td id="board-c3q2" onclick="playQuestion(3, 2)">$400</td>
+					<td id="board-c4q2" onclick="playQuestion(4, 2)">$400</td>
+					<td id="board-c5q2" onclick="playQuestion(5, 2)">$400</td>
+					<td id="board-c6q2" onclick="playQuestion(6, 2)">$400</td>
+				</tr>
+				<tr>
+					<td id="board-c1q3" onclick="playQuestion(1, 3)">$600</td>
+					<td id="board-c2q3" onclick="playQuestion(2, 3)">$600</td>
+					<td id="board-c3q3" onclick="playQuestion(3, 3)">$600</td>
+					<td id="board-c4q3" onclick="playQuestion(4, 3)">$600</td>
+					<td id="board-c5q3" onclick="playQuestion(5, 3)">$600</td>
+					<td id="board-c6q3" onclick="playQuestion(6, 3)">$600</td>
+				</tr>
+				<tr>
+					<td id="board-c1q4" onclick="playQuestion(1, 4)">$600</td>
+					<td id="board-c2q4" onclick="playQuestion(2, 4)">$600</td>
+					<td id="board-c3q4" onclick="playQuestion(3, 4)">$600</td>
+					<td id="board-c4q4" onclick="playQuestion(4, 4)">$600</td>
+					<td id="board-c5q4" onclick="playQuestion(5, 4)">$600</td>
+					<td id="board-c6q4" onclick="playQuestion(6, 4)">$600</td>
+				</tr>
+				<tr>
+					<td id="board-c1q5" onclick="playQuestion(1, 5)">$800</td>
+					<td id="board-c2q5" onclick="playQuestion(2, 5)">$800</td>
+					<td id="board-c3q5" onclick="playQuestion(3, 5)">$800</td>
+					<td id="board-c4q5" onclick="playQuestion(4, 5)">$800</td>
+					<td id="board-c5q5" onclick="playQuestion(5, 5)">$800</td>
+					<td id="board-c6q5" onclick="playQuestion(6, 5)">$800</td>
+				</tr>
+			</table>
+		</div>
+
+		<div id="question-played-by" style="display: none">
+			<p>Played by:</p>
+		</div>
+
+		<div id="answer-info" style="display: none">
+			<p>Answer: </p>
+			<p id="answer"></p>
+			<div id="right" style="width: 100px; text-align: center; border: 1px solid black" onclick="rightAnswer()">Correct</div>
+			<div id="wrong" style="width: 100px; text-align: center; border: 1px solid black" onclick="wrongAnswer()">Incorrect</div>
+		</div>
+
+		<script
+			src="https://code.jquery.com/jquery-3.3.1.min.js"
+			integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+			crossorigin="anonymous"></script>
+		<script src="controller.js"></script>
 	</body>
-	<script>
-		function init() {
-			window.addEventListener("message", messageReceived, false);
-		}
-
-		function messageReceived(event) {
-			document.querySelector("#received").innerHTML = event.data.first;
-		}
-
-		function sendData() {
-			window.opener.postMessage(Math.random().toString(), "*");
-		}
-	</script>
 </html>

@@ -1,0 +1,43 @@
+1. The host browses to index.html.
+2. The index immediately opens a new window at controller.html and registers an event handler to pass messages around.
+3. Index displays the Game Intro div.
+4. The host, on the Controller, chooses at least two players and sets their display names. The Controller sends this info back to the Index, which sets the scoreboard accordingly.
+5. The host, on the Controller, either selects a game from real Jeopardy categories picked at random, or a game made from a hand-crafted JSON file selected with a file dialog.
+6. If the host chooses real Jeopardy categories, the controller makes an AJAX request to jservice.io/api/clues?category=??? where ??? is a random number between 1 and 18,418. This returns a category with some multiple of five questions, of which five can randomly be selected for a category. Repeat six times to build a Single Jeopardy board, pick a random question to set as Daily Double, then send it to the Index for display.
+7. Index reveals the board but hides the category titles. The host clicks a button on the Controller to reveal each category title in sequence.
+8. Once all titles are revealed, gameplay starts when a player names the category and dollar value they want to see first. The Controller displays a grid of buttons mapped to the clues on the board, and the host clicks the corresponding button to reveal the clue.
+9. The Index shows the question, and the Controller shows the host the question, its answer, and buttons for if the player gets it right or wrong.
+10. The player answers and the host clicks the corresponding button, which adjust's the player's score accordingly. The Index goes back to the game board, and the Controller goes back to its view of the Game Board.
+11. Gameplay continues in this fashion. When a player selects a Daily Double, the Controller first asks the host for a wager from the player, then displays the clue and continues as normal.
+12. When the Single Jeopardy board is completed, another AJAX request is made to grab six more random categories for Double Jeopardy. Two random questions are picked as Daily Doubles.
+13. When the Double Jeopardy board is completed, a final AJAX request is made to grab one random clue. All players with positive scores make wagers, then the clue is revealed. The host selects who got it right and who got it wrong, then the Index displays a final score.
+
+
+Index States:
+	- Game Intro
+	- Game Board
+	- Question
+	- Final Jeopardy Category
+	- Final Score
+
+Controller States:
+	- Set Player Count and Names
+	- Select Game Source
+	- Reveal Category Titles (first, second... sixth)
+	- Game Board
+	- Question, Right or Wrong Buttons
+	- Daily Double Wager
+	- Final Jeopardy Wager
+	- Final Jeopardy Question
+	- Game Over
+
+Messages:
+	- (C>I) Player Count and Names
+	- (C>I) Display Jeopardy Board
+	- (C>I) Reveal Category Title with Number...
+	- (C>I) Display Question Selected by Player...
+	- (C>I) Update Player Score
+	- (C>I) Show Daily Double in Grid Space
+	- (C>I) Display Final Jeopardy Category
+	- (C>I) Display Final Jeopardy Question
+	- (C>I) Display Final Scores
