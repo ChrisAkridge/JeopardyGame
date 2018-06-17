@@ -8,6 +8,7 @@ var isDoubleJeopardy;
 var lastRevealedCategory = -1;
 var playingCategory = -1;
 var playingQuestion = -1;
+var guessesRemaining = -1;
 var activeClues = 30;
 
 function init() {
@@ -20,6 +21,10 @@ function sendMessage(message) {
 
 function messageReceived(event) {
 
+}
+
+function getQuestion(categoryNumber, questionNumber) {
+	return board[categoryNumber][questionNumber];
 }
 
 function setPlayerCount() {
@@ -54,8 +59,6 @@ function setPlayerInfo() {
 
 	$("#set-player-info").hide();
 	$("#choose-game-source").show();
-
-	createQuestionSelectedByElements();
 }
 
 function setGameSource() {
@@ -76,9 +79,12 @@ function startJServiceGame() {
 		for (var j = 0; j < 5; j++) {
 			category[j].scoreValue = ((j+1) * 100) * ((isDoubleJeopardy) ? 4 : 2);
 			category[j].answered = false;
+			category[j].isDailyDouble = false;
 		}
 		board.push(category);
 	}
+
+	pickDailyDoubles((isDoubleJeopardy) ? 2 : 1);
 
 	sendMessage({
 		type: "newBoard",
@@ -116,6 +122,25 @@ function pickFiveFromCategory(category) {
 	return resultCategory;
 }
 
+function pickDailyDoubles(ddCount) {
+	while (ddCount > 0) {
+		var questionsAlreadyPicked = [];
+		var categoryNumber;
+		var questionNumber;
+
+		do {
+			categoryNumber = Math.floor(Math.random() * 6);
+			questionNumber = Math.floor(Math.random() * 5);
+		} while (questionsAlreadyPicked.includes(categoryNumber * questionNumber));
+
+		board[categoryNumber][questionNumber].isDailyDouble = true;
+		questionsAlreadyPicked.push(categoryNumber * questionNumber);
+		$("#daily-doubles").append(categoryNumber + '-' + questionNumber);
+
+		ddCount--;
+	}
+}
+
 function revealCategory() {
 	if (lastRevealedCategory <= 4) {
 		lastRevealedCategory++;
@@ -147,14 +172,88 @@ function setControllerBoard() {
 function playQuestion(c, q) {
 	playingCategory = c - 1;
 	playingQuestion = q - 1;
+	guessesRemaining = players.length;
 
 	var question = board[playingCategory][playingQuestion];
+	if (!question.isDailyDouble) {
+		playStandardQuestion(question);
+	} else {
+		chooseDailyDoublePlayer(question);
+	}
+}
+
+function playStandardQuestion(question) {
 	var answerText = "$" + question.scoreValue + ": " + question.answer;
 	$("#answer").text(answerText);
 
 	makePlayerQuestionButtons();
 
 	$("#answer-info").show();
+
+	sendMessage({
+		type: "displayQuestion",
+		questionText: question.question
+	});
+}
+
+function chooseDailyDoublePlayer() {
+	$("#answer-buttons").empty();
+	$("#answer-buttons").append('<p>Pick Daily Double player:</p>');
+
+	for (let i = 0; i < players.length; i++) {
+		var playerDiv = $('<div>' + players[i].name + '</div>');
+		var selectButton = $('<button>Select</button>');
+		playerDiv.append(selectButton);
+
+		selectButton.click(function() {
+			selectDailyDoublePlayer(i);
+		});
+
+		$("#answer-buttons").append(playerDiv);
+	}
+
+	$("#answer-info").show();
+
+	sendMessage({
+		type: "displayDailyDoubleLogo"
+	});
+}
+
+function selectDailyDoublePlayer(playerIndex) {
+	var question = getQuestion(playingCategory, playingQuestion);
+
+	sendMessage({
+		type: "highlightDailyDoublePlayer",
+		index: playerIndex
+	});
+
+	var player = players[playerIndex];
+	var maxWager = (player.score >= 1000) ? player.score : 1000;
+	var wagerText;
+
+	while (isNaN(wagerText)) {
+		wagerText = prompt('Player ' + player.name + ' can wager up to $' + maxWager.toFixed(0));
+	}
+
+	var wager = parseInt(wagerText);
+
+	$("#answer-buttons").empty();
+	var answerText = "$" + question.scoreValue + ": " + question.answer;
+	$("#answer").text(answerText);
+
+	var rightButton = $('<button>Correct</button>');
+	var wrongButton = $('<button>Incorrect</button>');
+
+	rightButton.click(function() {
+		answerDailyDouble(playerIndex, wager);
+	});
+
+	wrongButton.click(function() {
+		answerDailyDouble(playerIndex, -wager);
+	});
+
+	$("#answer-buttons").append(rightButton);
+	$("#answer-buttons").append(wrongButton);
 
 	sendMessage({
 		type: "displayQuestion",
@@ -185,20 +284,33 @@ function makePlayerQuestionButtons() {
 	}
 }
 
-function questionAnswered(playerIndex) {
-	activeClues--;
-	if (activeClues === 0) {alert("Board clear!");}
-
-	$("#answer-info").hide();
-
-	$("#board-c" + (playingCategory+1) + "q" + (playingQuestion+1)).off("click");
-	$("#board-c" + (playingCategory+1) + "q" + (playingQuestion+1)).text("");
-
+function questionAnswered(playerIndex, wasCorrect) {
 	sendMessage({
 		type: "updateScore",
 		playerIndex: playerIndex,
 		newScore: players[playerIndex].score
 	});
+
+	sendMessage({
+		type: "clearPlayerHighlighting"
+	});
+
+	guessesRemaining--;
+
+	if (guessesRemaining === 0 || wasCorrect) {
+		finishQuestion();
+	}
+}
+
+function finishQuestion() {
+	activeClues--;
+	guessesRemaining = -1;
+	if (activeClues === 0) {alert("Board clear!");}
+
+	$("#answer-info").hide();
+
+	$("#board-c" + (playingCategory+1) + "q" + (playingQuestion+1)).off("click");
+	$("#board-c" + (playingCategory+1) + "q" + (playingQuestion+1)).text("-");
 
 	sendMessage({
 		type: "hideQuestion",
@@ -217,12 +329,19 @@ function rightAnswer(playerIndex) {
 	var question = board[playingCategory][playingQuestion];
 	players[playerIndex].score += question.scoreValue;
 
-	questionAnswered(playerIndex);
+	questionAnswered(playerIndex, true);
 }
 
 function wrongAnswer(playerIndex) {
 	var question = board[playingCategory][playingQuestion];
 	players[playerIndex].score -= question.scoreValue;
 
-	questionAnswered(playerIndex);
+	questionAnswered(playerIndex, false);
+}
+
+function answerDailyDouble(playerIndex, wager) {
+	players[playerIndex].score += wager;
+
+	questionAnswered(playerIndex, false);
+	finishQuestion();
 }

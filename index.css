@@ -17,7 +17,7 @@ div {
 
 /* Game Intro */
 
-#game-intro {
+.logo-center {
 	width: 100%;
 	height: 100%;
 	display: flex;
@@ -25,7 +25,7 @@ div {
 	align-items: center;
 }
 
-#logo {
+.logo {
 	display: block;
 }
 
@@ -104,4 +104,9 @@ div {
 	text-transform: uppercase;
 	margin-top: auto;
 	margin-bottom: auto;
+}
+
+/* Daily Double */
+#daily-double {
+	display: none;
 }

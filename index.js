@@ -3,6 +3,7 @@
 
 var controller;
 var playerInfo = [];
+var dailyDoubleHighlightedPlayer = -1;
 
 function init() {
 	controller = window.open("controller.html", "", 'location=0, status=1, toolbar=0, menubar=0, resizable=1, scrollbars=, height=480, width=640');
@@ -25,6 +26,12 @@ function messageReceived(event) {
 		hideQuestion(message.category, message.question);
 	} else if (message.type == 'returnToBoard') {
 		returnToBoard();
+	} else if (message.type == 'displayDailyDoubleLogo') {
+		displayDailyDoubleLogo();
+	} else if (message.type == 'highlightDailyDoublePlayer') {
+		highlightDailyDoublePlayer(message.playerIndex);
+	} else if (message.type == 'clearPlayerHighlighting') {
+		clearPlayerHighlighting();
 	}
 }
 
@@ -80,6 +87,7 @@ function revealCategory(index, categoryName) {
 
 function displayQuestion(questionText) {
 	$("#board").hide();
+	$("#daily-double").hide();
 	$("#clue").text(questionText);
 	$("#clue").css({display: 'flex'});
 }
@@ -96,5 +104,21 @@ function hideQuestion(category, question) {
 
 function returnToBoard() {
 	$("#clue").hide();
+	$("#daily-double").hide();
 	$("#board").css({display: 'flex'});
+}
+
+function displayDailyDoubleLogo() {
+	$("#board").hide();
+	$("#daily-double").css({display: 'flex'});
+}
+
+function highlightDailyDoublePlayer(playerIndex) {
+	$("#player-" + playerIndex + "-score").css({'background-color': '#00FF00'});
+	dailyDoubleHighlightedPlayer = playerIndex;
+}
+
+function clearPlayerHighlighting() {
+	$("player-" + dailyDoubleHighlightedPlayer + "-score").css({'background-color': ''});
+	dailyDoubleHighlightedPlayer = -1;
 }

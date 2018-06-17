@@ -31,6 +31,8 @@
 		</div>
 
 		<div id="board" style="display: none">
+			<p id="daily-doubles">Daily Doubles: </p>
+
 			<table border="1" bordercolor="#000000" align="center" width="80%" height="80%">
 				<tr>
 					<th id="board-c1h">JEOPARDY!</th>
@@ -86,6 +88,7 @@
 			<p>Answer: </p>
 			<p id="answer"></p>
 			<div id="answer-buttons"></div>
+			<input type="button" value="Time Out" onclick="finishQuestion()" />
 		</div>
 
 		<script
