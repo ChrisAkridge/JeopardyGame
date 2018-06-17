@@ -8,7 +8,6 @@ var isDoubleJeopardy;
 var lastRevealedCategory = -1;
 var playingCategory = -1;
 var playingQuestion = -1;
-var selectedBy = -1;
 var activeClues = 30;
 
 function init() {
@@ -145,35 +144,15 @@ function setControllerBoard() {
 	}
 }
 
-function createQuestionSelectedByElements() {
-	for (let i = 0; i < players.length; i++) {
-		var playerDiv = $('<div id="selected-by-' + i + '">' + players[i].name + '</div>');
-		playerDiv.css({
-			'width': "200px",
-			'text-align': 'center',
-			'border': '1px solid black'
-		});
-		playerDiv.click(function() {
-			playerSelectedQuestion(i);
-		})
-		$("#question-played-by").append(playerDiv);
-	}
-}
-
 function playQuestion(c, q) {
 	playingCategory = c - 1;
 	playingQuestion = q - 1;
 
-	$("#question-played-by").show();
-}
-
-function playerSelectedQuestion(playerIndex) {
-	$("#question-played-by").hide();
-	selectedBy = playerIndex;
-
 	var question = board[playingCategory][playingQuestion];
 	var answerText = "$" + question.scoreValue + ": " + question.answer;
 	$("#answer").text(answerText);
+
+	makePlayerQuestionButtons();
 
 	$("#answer-info").show();
 
@@ -183,7 +162,30 @@ function playerSelectedQuestion(playerIndex) {
 	});
 }
 
-function questionAnswered() {
+function makePlayerQuestionButtons() {
+	$("#answer-buttons").empty();
+
+	for (let i = 0; i < players.length; i++) {
+		var playerDiv = $('<div>' + players[i].name + '</div>');
+		var rightButton = $('<button>Correct</button>');
+		var wrongButton = $('<button>Incorrect</button>');
+
+		rightButton.click(function () {
+			rightAnswer(i);
+		});
+
+		wrongButton.click(function () {
+			wrongAnswer(i);
+		});
+
+		playerDiv.append(rightButton);
+		playerDiv.append(wrongButton);
+
+		$("#answer-buttons").append(playerDiv);
+	}
+}
+
+function questionAnswered(playerIndex) {
 	activeClues--;
 	if (activeClues === 0) {alert("Board clear!");}
 
@@ -194,8 +196,8 @@ function questionAnswered() {
 
 	sendMessage({
 		type: "updateScore",
-		playerIndex: selectedBy,
-		newScore: players[selectedBy].score
+		playerIndex: playerIndex,
+		newScore: players[playerIndex].score
 	});
 
 	sendMessage({
@@ -208,19 +210,19 @@ function questionAnswered() {
 		type: "returnToBoard"
 	});
 
-	playingCategory = playingQuestion = selectedBy = -1;
+	playingCategory = playingQuestion = -1;
 }
 
-function rightAnswer() {
+function rightAnswer(playerIndex) {
 	var question = board[playingCategory][playingQuestion];
-	players[selectedBy].score += question.scoreValue;
+	players[playerIndex].score += question.scoreValue;
 
-	questionAnswered();
+	questionAnswered(playerIndex);
 }
 
-function wrongAnswer() {
+function wrongAnswer(playerIndex) {
 	var question = board[playingCategory][playingQuestion];
-	players[selectedBy].score -= question.scoreValue;
+	players[playerIndex].score -= question.scoreValue;
 
-	questionAnswered();
+	questionAnswered(playerIndex);
 }

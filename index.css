@@ -74,7 +74,7 @@ div {
 	font-family: 'PT Sans', sans-serif;
 	font-size: 32px;
 	text-transform: uppercase;
-	text-shadow: -2px 2px 3px #000000;
+	text-shadow: 2px 2px 5px #000000;
 	text-align: center;
 	border: 2px solid black;
 }
@@ -86,17 +86,20 @@ div {
 	color: yellow;
 	font-family: 'Open Sans', sans-serif;
 	font-size: 56px;
-	text-shadow: -2px 2px 3px #000000;
+	text-shadow: 2px 2px 5px #000000;
 	border: 2px solid black;
 	text-align: center;
 }
+
+/* add functionality to skip a question timed out */
+/* keep a counter that cancels a question if everybody got it wrong */
 
 /* Clue */
 #clue {
 	display: none;
 	font-family: 'Sunflower', sans-serif;
 	font-size: 64px;
-	text-shadow: -2px 2px 3px #000000;
+	text-shadow: 2px 2px 5px #000000;
 	text-align: center;
 	text-transform: uppercase;
 	margin-top: auto;
