@@ -92,6 +92,7 @@ function startJServiceGame() {
 	})
 
 	$("#choose-game-source").hide();
+	$("#board").hide();
 	$("#category-reveal").show();
 
 	setControllerBoard();
@@ -135,7 +136,7 @@ function pickDailyDoubles(ddCount) {
 
 		board[categoryNumber][questionNumber].isDailyDouble = true;
 		questionsAlreadyPicked.push(categoryNumber * questionNumber);
-		$("#daily-doubles").append(categoryNumber + '-' + questionNumber);
+		$("#daily-doubles").append(categoryNumber + '-' + questionNumber + ' ');
 
 		ddCount--;
 	}
@@ -305,7 +306,6 @@ function questionAnswered(playerIndex, wasCorrect) {
 function finishQuestion() {
 	activeClues--;
 	guessesRemaining = -1;
-	if (activeClues === 0) {alert("Board clear!");}
 
 	$("#answer-info").hide();
 
@@ -323,6 +323,10 @@ function finishQuestion() {
 	});
 
 	playingCategory = playingQuestion = -1;
+
+	if (activeClues === 0 && !isDoubleJeopardy) {
+		startDoubleJeopardy();
+	}
 }
 
 function rightAnswer(playerIndex) {
@@ -344,4 +348,15 @@ function answerDailyDouble(playerIndex, wager) {
 
 	questionAnswered(playerIndex, false);
 	finishQuestion();
+}
+
+function startDoubleJeopardy() {
+	isDoubleJeopardy = true;
+	board = [];
+	lastRevealedCategory = -1;
+	$("#daily-doubles").text('');
+
+	if (gameSource === 'jService') {
+		startJServiceGame();
+	}
 }

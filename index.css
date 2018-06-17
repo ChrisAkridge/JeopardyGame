@@ -102,8 +102,7 @@ div {
 	text-shadow: 2px 2px 5px #000000;
 	text-align: center;
 	text-transform: uppercase;
-	margin-top: auto;
-	margin-bottom: auto;
+	margin: auto;
 }
 
 /* Daily Double */

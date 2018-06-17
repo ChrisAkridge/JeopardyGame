@@ -99,7 +99,7 @@ function updateScore(playerIndex, newScore) {
 }
 
 function hideQuestion(category, question) {
-	$("#question-" + category + "-" + question).empty();
+	$("#question-" + category + "-" + question + " .box-text").empty();
 }
 
 function returnToBoard() {
