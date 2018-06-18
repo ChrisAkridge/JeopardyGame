@@ -354,6 +354,7 @@ function startDoubleJeopardy() {
 	isDoubleJeopardy = true;
 	board = [];
 	lastRevealedCategory = -1;
+	activeClues = 30;
 	$("#daily-doubles").text('');
 
 	if (gameSource === 'jService') {
