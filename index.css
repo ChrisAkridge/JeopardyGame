@@ -91,9 +91,6 @@ div {
 	text-align: center;
 }
 
-/* add functionality to skip a question timed out */
-/* keep a counter that cancels a question if everybody got it wrong */
-
 /* Clue */
 #clue {
 	display: none;
@@ -107,5 +104,10 @@ div {
 
 /* Daily Double */
 #daily-double {
+	display: none;
+}
+
+/* Final Jeopardy */
+#final-jeopardy {
 	display: none;
 }

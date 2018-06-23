@@ -32,6 +32,10 @@ function messageReceived(event) {
 		highlightDailyDoublePlayer(message.playerIndex);
 	} else if (message.type == 'clearPlayerHighlighting') {
 		clearPlayerHighlighting();
+	} else if (message.type == 'displayFinalJeopardyLogo') {
+		displayFinalJeopardyLogo();
+	} else if (message.type == 'completeGame') {
+		completeGame();
 	}
 }
 
@@ -88,6 +92,7 @@ function revealCategory(index, categoryName) {
 function displayQuestion(questionText) {
 	$("#board").hide();
 	$("#daily-double").hide();
+	$("#final-jeopardy").hide();
 	$("#clue").text(questionText);
 	$("#clue").css({display: 'flex'});
 }
@@ -121,4 +126,14 @@ function highlightDailyDoublePlayer(playerIndex) {
 function clearPlayerHighlighting() {
 	$("player-" + dailyDoubleHighlightedPlayer + "-score").css({'background-color': ''});
 	dailyDoubleHighlightedPlayer = -1;
+}
+
+function displayFinalJeopardyLogo() {
+	$("#board").hide();
+	$("#final-jeopardy").css({display: 'flex'});
+}
+
+function completeGame() {
+	$("#clue").hide();
+	$("#game-intro").css({display: 'flex'});
 }

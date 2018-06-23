@@ -10,6 +10,9 @@ var playingCategory = -1;
 var playingQuestion = -1;
 var guessesRemaining = -1;
 var activeClues = 30;
+var finalPlayerWagers = [];
+var finalJeopardyClue = {};
+var finalJeopardyGuessesLeft = 0;
 
 function init() {
 	window.addEventListener("message", messageReceived, false);
@@ -326,6 +329,8 @@ function finishQuestion() {
 
 	if (activeClues === 0 && !isDoubleJeopardy) {
 		startDoubleJeopardy();
+	} else if (activeClues === 0 && isDoubleJeopardy) {
+		startFinalJeopardy();
 	}
 }
 
@@ -360,4 +365,124 @@ function startDoubleJeopardy() {
 	if (gameSource === 'jService') {
 		startJServiceGame();
 	}
+}
+
+function startFinalJeopardy() {
+	board = [];
+
+	sendMessage({
+		type: "displayFinalJeopardyLogo"
+	});
+
+	setTimeout("completeStartFinalJeopardy()", 1000);
+}
+
+function completeStartFinalJeopardy() {
+	finalJeopardyClue = getFinalJeopardyClue();
+	for (var i = 0; i < players.length; i++) {
+		finalPlayerWagers[i] = getFinalJeopardyWager(i);
+	}
+
+	$("#answer").text(finalJeopardyClue.answer);
+
+	makeFinalJeopardyButtons();
+
+	sendMessage({
+		type: "displayQuestion",
+		questionText: finalJeopardyClue.question
+	});
+}
+
+function getFinalJeopardyClue() {
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", "http://jservice.io/api/clues?value=500", false);
+	xhr.send();
+
+	if (xhr.readyState === 4 && xhr.status === 200) {
+		var resultJSON = JSON.parse(xhr.responseText);
+	} else {
+		alert("Tried to get Final Jeopardy question from jService.io, but it failed with status code " + xhr.status);
+	}
+
+	var questionNumber = Math.floor(Math.random() * resultJSON.length);
+	return resultJSON[questionNumber];
+}
+
+function getFinalJeopardyWager(playerIndex) {
+	var player = players[playerIndex];
+	if (player.score <= 0) { return -1; }
+
+	var wagerText;
+
+	while (isNaN(wagerText)) {
+		wagerText = prompt('Player ' + player.name + ' can wager up to $' + player.score.toFixed(0));
+	}
+
+	return parseInt(wagerText);
+}
+
+function makeFinalJeopardyButtons() {
+	$("#answer-buttons").empty();
+
+	for (let i = 0; i < players.length; i++) {
+		var player = players[i];
+		if (player.score <= 0) { return; }
+
+		var buttonDiv = $('<div>' + player.name + '</div>');
+		var rightButton = $('<button>Correct</button>');
+		var wrongButton = $('<button>Incorrect</button>');
+
+		rightButton.click(function() {
+			finalJeopardyCorrectAnswer(i);
+		});
+
+		wrongButton.click(function() {
+			finalJeopardyIncorrectAnswer(i);
+		});
+
+		buttonDiv.append(rightButton);
+		buttonDiv.append(wrongButton);
+		$("#answer-buttons").append(buttonDiv);
+		$("#answer-info").show();
+
+		finalJeopardyGuessesLeft++;
+	}
+}
+
+function finalJeopardyCorrectAnswer(playerIndex) {
+	players[playerIndex].score += finalPlayerWagers[playerIndex];
+
+	sendMessage({
+		type: "updateScore",
+		playerIndex: playerIndex,
+		newScore: players[playerIndex].score
+	});
+
+	finalJeopardyGuessesLeft--;
+
+	if (finalJeopardyGuessesLeft === 0) {
+		completeGame();
+	}
+}
+
+function finalJeopardyIncorrectAnswer(playerIndex) {
+	players[playerIndex].score -= finalPlayerWagers[playerIndex];
+
+	sendMessage({
+		type: "updateScore",
+		playerIndex: playerIndex,
+		newScore: players[playerIndex].score
+	});
+
+	finalJeopardyGuessesLeft--;
+
+	if (finalJeopardyGuessesLeft === 0) {
+		completeGame();
+	}
+}
+
+function completeGame() {
+	sendMessage({
+		type: "completeGame"
+	});
 }
