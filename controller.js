@@ -196,7 +196,8 @@ function playStandardQuestion(question) {
 
 	sendMessage({
 		type: "displayQuestion",
-		questionText: question.question
+		questionText: question.question,
+		isFinalJeopardy: false
 	});
 }
 
@@ -261,7 +262,8 @@ function selectDailyDoublePlayer(playerIndex) {
 
 	sendMessage({
 		type: "displayQuestion",
-		questionText: question.question
+		questionText: question.question,
+		isFinalJeopardy: false
 	});
 }
 
@@ -302,11 +304,11 @@ function questionAnswered(playerIndex, wasCorrect) {
 	guessesRemaining--;
 
 	if (guessesRemaining === 0 || wasCorrect) {
-		finishQuestion();
+		finishQuestion(false);
 	}
 }
 
-function finishQuestion() {
+function finishQuestion(timeOut) {
 	activeClues--;
 	guessesRemaining = -1;
 
@@ -322,7 +324,8 @@ function finishQuestion() {
 	});
 
 	sendMessage({
-		type: "returnToBoard"
+		type: "returnToBoard",
+		isTimeOut: timeOut
 	});
 
 	playingCategory = playingQuestion = -1;
@@ -352,7 +355,7 @@ function answerDailyDouble(playerIndex, wager) {
 	players[playerIndex].score += wager;
 
 	questionAnswered(playerIndex, false);
-	finishQuestion();
+	finishQuestion(false);
 }
 
 function startDoubleJeopardy() {
@@ -369,16 +372,17 @@ function startDoubleJeopardy() {
 
 function startFinalJeopardy() {
 	board = [];
+	finalJeopardyClue = getFinalJeopardyClue();
 
 	sendMessage({
-		type: "displayFinalJeopardyLogo"
+		type: "displayFinalJeopardyLogo",
+		category: finalJeopardyClue.category.title
 	});
 
 	setTimeout("completeStartFinalJeopardy()", 1000);
 }
 
 function completeStartFinalJeopardy() {
-	finalJeopardyClue = getFinalJeopardyClue();
 	for (var i = 0; i < players.length; i++) {
 		finalPlayerWagers[i] = getFinalJeopardyWager(i);
 	}
@@ -389,7 +393,8 @@ function completeStartFinalJeopardy() {
 
 	sendMessage({
 		type: "displayQuestion",
-		questionText: finalJeopardyClue.question
+		questionText: finalJeopardyClue.question,
+		isFinalJeopardy: true
 	});
 }
 

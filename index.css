@@ -110,4 +110,14 @@ div {
 /* Final Jeopardy */
 #final-jeopardy {
 	display: none;
+	flex-direction: column;
+}
+
+#fj-category {
+	font-family: 'Sunflower', sans-serif;
+	font-size: 64px;
+	text-shadow: 2px 2px 5px #000000;
+	text-align: center;
+	text-transform: uppercase;
+	margin: auto;
 }

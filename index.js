@@ -5,6 +5,12 @@ var controller;
 var playerInfo = [];
 var dailyDoubleHighlightedPlayer = -1;
 
+// Sounds
+var ddSound = zounds.load('sounds/dailyDouble.mp3');
+var fjTheme = zounds.load('sounds/finalJeopardy.mp3');
+var timeOutSound = zounds.load('sounds/timeOut.mp3');
+var creditsSound = zounds.load('sounds/credits.mp3');
+
 function init() {
 	controller = window.open("controller.html", "", 'location=0, status=1, toolbar=0, menubar=0, resizable=1, scrollbars=, height=480, width=640');
 	window.addEventListener("message", messageReceived, false);
@@ -19,13 +25,13 @@ function messageReceived(event) {
 	} else if (message.type == 'revealCategory') {
 		revealCategory(message.index, message.categoryName);
 	} else if (message.type == 'displayQuestion') {
-		displayQuestion(message.questionText);
+		displayQuestion(message.questionText, message.isFinalJeopardy);
 	} else if (message.type == 'updateScore') {
 		updateScore(message.playerIndex, message.newScore);
 	} else if (message.type == 'hideQuestion') {
 		hideQuestion(message.category, message.question);
 	} else if (message.type == 'returnToBoard') {
-		returnToBoard();
+		returnToBoard(message.isTimeOut);
 	} else if (message.type == 'displayDailyDoubleLogo') {
 		displayDailyDoubleLogo();
 	} else if (message.type == 'highlightDailyDoublePlayer') {
@@ -33,7 +39,7 @@ function messageReceived(event) {
 	} else if (message.type == 'clearPlayerHighlighting') {
 		clearPlayerHighlighting();
 	} else if (message.type == 'displayFinalJeopardyLogo') {
-		displayFinalJeopardyLogo();
+		displayFinalJeopardyLogo(message.category);
 	} else if (message.type == 'completeGame') {
 		completeGame();
 	}
@@ -89,12 +95,16 @@ function revealCategory(index, categoryName) {
 	$("#header-" + (index + 1)).text(categoryName);
 }
 
-function displayQuestion(questionText) {
+function displayQuestion(questionText, isFinalJeopardy) {
 	$("#board").hide();
 	$("#daily-double").hide();
 	$("#final-jeopardy").hide();
 	$("#clue").text(questionText);
 	$("#clue").css({display: 'flex'});
+
+	if (isFinalJeopardy) {
+		fjTheme.play();
+	}
 }
 
 function updateScore(playerIndex, newScore) {
@@ -107,15 +117,20 @@ function hideQuestion(category, question) {
 	$("#question-" + category + "-" + question + " .box-text").empty();
 }
 
-function returnToBoard() {
+function returnToBoard(isTimeOut) {
 	$("#clue").hide();
 	$("#daily-double").hide();
 	$("#board").css({display: 'flex'});
+
+	if (isTimeOut) {
+		timeOutSound.play();
+	}
 }
 
 function displayDailyDoubleLogo() {
 	$("#board").hide();
 	$("#daily-double").css({display: 'flex'});
+	ddSound.play();
 }
 
 function highlightDailyDoublePlayer(playerIndex) {
@@ -128,12 +143,14 @@ function clearPlayerHighlighting() {
 	dailyDoubleHighlightedPlayer = -1;
 }
 
-function displayFinalJeopardyLogo() {
+function displayFinalJeopardyLogo(categoryName) {
 	$("#board").hide();
 	$("#final-jeopardy").css({display: 'flex'});
+	$("#fj-category").text(categoryName);
 }
 
 function completeGame() {
 	$("#clue").hide();
 	$("#game-intro").css({display: 'flex'});
+	creditsSound.play();
 }

@@ -3,6 +3,8 @@
 	<head>
 		<link rel="stylesheet" type="text/css" href="index.css" />
 		<title>Jeopardy!</title>
+		<script src="zounds.min.js"></script>
+		<!-- Uses sounds from https://www.myinstants.com/search/?name=jeopardy -->
 	</head>
 	<body onload="init()" onresize="resizeBoard()">
 		<!-- Game Intro -->
@@ -73,7 +75,8 @@
 		</div>
 
 		<div id="final-jeopardy" class="logo-center">
-			<img class="logo" src="https://i.imgur.com/TT1OAt3.jpg" />
+			<!-- img class="logo" src="https://i.imgur.com/TT1OAt3.jpg" /> -->
+			<p id="fj-category"></p>
 		</div>
 
 		<script
